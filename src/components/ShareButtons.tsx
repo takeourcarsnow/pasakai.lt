@@ -15,7 +15,10 @@ export const ShareButtons: React.FC<ShareButtonsProps> = ({ story, visible }) =>
       setTimeout(() => {
         setCopyText('Kopijuoti pasaką');
       }, 2000);
-    } catch (err) {
+    } catch (e) {
+      // Log the error for debugging and show a user-friendly alert
+      // eslint-disable-next-line no-console
+      console.error('Copy failed:', e);
       alert('Nepavyko nukopijuoti teksto');
     }
   };

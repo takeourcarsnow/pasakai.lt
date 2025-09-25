@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -32,7 +32,6 @@ export const SettingSwiper: React.FC<SettingSwiperProps> = ({
   className
 }) => {
   const [swiper, setSwiper] = useState<SwiperType | null>(null);
-  const swiperRef = useRef<SwiperType | null>(null);
 
   // Get random initial slide (excluding first and last)
   const getRandomInitialSlide = () => {

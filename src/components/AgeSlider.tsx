@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import type { AgeRange } from '@/types';
 
 interface AgeSliderProps {

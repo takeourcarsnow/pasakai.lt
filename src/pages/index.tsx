@@ -8,7 +8,7 @@ import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { TypewriterText } from '@/components/TypewriterText';
 import { ShareButtons } from '@/components/ShareButtons';
 import { STORY_OPTIONS } from '@/lib/constants';
-import type { StoryRequest, StoryResponse, ErrorResponse } from '@/types';
+import type { StoryRequest, StoryResponse } from '@/types';
 
 interface StorySelections {
   time: string;
@@ -113,9 +113,6 @@ export default function Home() {
         <meta name="description" content="Atrask savo pasaką" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         
-        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap" as="style" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -127,7 +124,7 @@ export default function Home() {
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         
-        <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap" rel="stylesheet" />
+  {/* Fonts are loaded globally in _document.tsx */}
       </Head>
 
       <div className="bg-gradient" aria-hidden="true"></div>
