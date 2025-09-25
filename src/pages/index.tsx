@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Head from 'next/head';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { FireflyEffect } from '@/components/FireflyEffect';
@@ -32,9 +32,17 @@ export default function Home() {
   const [showStory, setShowStory] = useState<boolean>(false);
   const [showShareButtons, setShowShareButtons] = useState<boolean>(false);
 
-  const updateSelection = (key: keyof StorySelections, value: string) => {
+  const updateSelection = useCallback((key: keyof StorySelections, value: string) => {
     setSelections(prev => ({ ...prev, [key]: value }));
-  };
+  }, []);
+
+  // Stable callbacks for each setting so child components don't receive a new
+  // function reference every render (prevents repeated effect triggers).
+  const onTimeSelection = useCallback((value: string) => updateSelection('time', value), [updateSelection]);
+  const onPlaceSelection = useCallback((value: string) => updateSelection('place', value), [updateSelection]);
+  const onCharacterSelection = useCallback((value: string) => updateSelection('characters', value), [updateSelection]);
+  const onMoodSelection = useCallback((value: string) => updateSelection('mood', value), [updateSelection]);
+  const onAgeChange = useCallback((value: string) => updateSelection('ageGroup', value), [updateSelection]);
 
   const generateStory = async () => {
     // Validate selections
@@ -158,34 +166,34 @@ export default function Home() {
           <SettingSwiper
             title="🕰️ Kada vyksta pasaka?"
             options={STORY_OPTIONS.time}
-            onSelectionChange={(value) => updateSelection('time', value)}
+            onSelectionChange={onTimeSelection}
             className="time-swiper"
           />
 
           <SettingSwiper
             title="📍 Kur vyksta pasaka?"
             options={STORY_OPTIONS.place}
-            onSelectionChange={(value) => updateSelection('place', value)}
+            onSelectionChange={onPlaceSelection}
             className="place-swiper"
           />
 
           <SettingSwiper
             title="👥 Kas yra veikėjai?"
             options={STORY_OPTIONS.character}
-            onSelectionChange={(value) => updateSelection('characters', value)}
+            onSelectionChange={onCharacterSelection}
             className="character-swiper"
           />
 
           <SettingSwiper
             title="🎭 Kokia nuotaika?"
             options={STORY_OPTIONS.mood}
-            onSelectionChange={(value) => updateSelection('mood', value)}
+            onSelectionChange={onMoodSelection}
             className="mood-swiper"
           />
 
           <AgeSlider
             value={selections.ageGroup}
-            onChange={(value) => updateSelection('ageGroup', value)}
+            onChange={onAgeChange}
           />
 
           <button 

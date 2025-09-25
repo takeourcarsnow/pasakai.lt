@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -41,16 +41,23 @@ export const SettingSwiper: React.FC<SettingSwiperProps> = ({
   };
 
   const [initialSlide] = useState(() => getRandomInitialSlide());
+  const initialSelectionApplied = useRef(false);
 
   useEffect(() => {
-    if (swiper) {
-      // Set initial selection based on the initial slide
+    // Apply initial selection once after the Swiper instance is ready.
+    if (swiper && !initialSelectionApplied.current) {
       const initialOption = options[initialSlide];
       if (initialOption) {
         onSelectionChange(initialOption.value);
       }
+      initialSelectionApplied.current = true;
     }
-  }, [swiper, initialSlide, options, onSelectionChange]);
+    // We intentionally omit options and onSelectionChange from the
+    // dependency list to avoid re-triggering this effect if the parent
+    // updates selection (which could cause a loop). The initial selection
+    // should only be applied once when Swiper becomes available.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [swiper, initialSlide]);
 
   const handleSlideChange = (swiper: SwiperType) => {
     const activeIndex = swiper.activeIndex;
