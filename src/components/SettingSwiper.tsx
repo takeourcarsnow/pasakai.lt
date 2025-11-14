@@ -5,6 +5,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import type { Swiper as SwiperType } from 'swiper';
+import Image from 'next/image';
 
 interface ChoiceCardProps {
   emoji: string;
@@ -15,7 +16,7 @@ interface ChoiceCardProps {
 const ChoiceCard: React.FC<ChoiceCardProps> = ({ emoji, text, onClick }) => (
   <div className="choice-card" onClick={onClick}>
     <div className="emoji">
-      {emoji.startsWith('http') ? <img src={emoji} alt={text} /> : emoji}
+      {emoji.startsWith('http') ? <Image src={emoji} alt={text} width={50} height={50} /> : emoji}
     </div>
     <span>{text}</span>
   </div>

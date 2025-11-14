@@ -1,11 +1,11 @@
-# 🌟 PasakAI - Lithuanian Story Generator (Next.js)
+# 🌟 PasakAI - Multi-Language Story Generator (Next.js)
 
-A magical story generator for children that creates personalized Lithuanian fairy tales using Google's Gemini AI. This is the fully converted Next.js + TypeScript version.
+A magical story generator for children that creates personalized fairy tales using Google's Gemini AI. This is the fully converted Next.js + TypeScript version.
 
 ## 🚀 Features
 
 - **Interactive Story Creation**: Choose time, place, characters, mood, and age group
-- **AI-Powered Stories**: Uses Google Gemini AI to generate unique Lithuanian fairy tales
+- **AI-Powered Stories**: Uses Google Gemini AI to generate unique fairy tales
 - **Age-Appropriate Content**: Customized complexity based on child's age (3-6, 7-9, 10-12, 13+ years)
 - **Beautiful UI**: Modern design with animations, firefly effects, and theme switching
 - **TypeScript & React**: Fully converted from Express.js + EJS to Next.js with TypeScript
@@ -39,8 +39,8 @@ A magical story generator for children that creates personalized Lithuanian fair
 
 1. Clone the repository:
 ```bash
-git clone <your-repo-url>
-cd pasakainext
+git clone https://github.com/takeourcarsnow/pasakai.lt.git
+cd pasakai.lt
 ```
 
 2. Install dependencies:
@@ -49,13 +49,11 @@ npm install
 ```
 
 3. Set up environment variables:
-```bash
-cp .env.example .env.local
-```
-
-Edit `.env.local` and add your Gemini API key:
-```
+Create a `.env.local` file in the root directory (Next.js will load this automatically in development) and add your Gemini API key. Do NOT commit this file to source control — add it to `.gitignore`.
+```env
 GEMINI_API_KEY=your_gemini_api_key_here
+# Optional: other environment variables used by your deployment
+# NEXT_PUBLIC_APP_NAME=PasakAI
 ```
 
 4. Run the development server:
@@ -72,31 +70,19 @@ npm run build
 npm start
 ```
 
-## 📁 Project Structure
+## 📁 Project structure
 
-```
-src/
-├── components/          # React components
-│   ├── AgeSlider.tsx
-│   ├── FireflyEffect.tsx
-│   ├── LoadingAnimation.tsx
-│   ├── SettingSwiper.tsx
-│   ├── ShareButtons.tsx
-│   ├── ThemeToggle.tsx
-│   └── TypewriterText.tsx
-├── lib/                 # Utilities and configurations
-│   ├── constants.ts     # Story options
-│   └── gemini.ts        # AI integration
-├── pages/               # Next.js pages
-│   ├── api/             # API routes
-│   │   └── generate-story.ts
-│   ├── _app.tsx
-│   └── index.tsx
-├── styles/              # CSS styles
-│   └── globals.css
-└── types/               # TypeScript type definitions
-    └── index.ts
-```
+A compact overview of the main folders you’ll work with:
+
+- `src/components/` — UI components (AgeSlider, FireflyEffect, TypewriterText, etc.)
+- `src/lib/` — utilities and integrations (e.g., `gemini.ts`, `constants.ts`)
+- `src/pages/` — Next.js pages and API routes (`/api/generate-story`)
+- `src/styles/` — global styles (e.g., `globals.css`)
+- `src/types/` — TypeScript type definitions
+- `public/` — static files (icons, manifest)
+- top-level files: `package.json`, `next.config.js`, `README.md`
+
+This keeps the README focused while still showing where to find the important code.
 
 ## 🔧 Scripts
 
@@ -112,7 +98,7 @@ src/
 Stories are generated using Google's Gemini AI with custom prompts tailored to:
 - Selected story elements (time, place, characters, mood)
 - Age-appropriate complexity levels
-- Lithuanian language requirements
+- Multi-language support
 - Emoji integration and formatting
 
 ### Interactive UI Components
@@ -154,7 +140,7 @@ This project was successfully converted from an Express.js + EJS application to 
 - ✅ Express.js API → Next.js API routes
 - ✅ EJS templates → React components
 - ✅ Vanilla JavaScript → TypeScript
-- ✅ CSS → CSS modules with TypeScript integration
+- ✅ CSS → CSS files (see `src/styles/globals.css`)
 - ✅ File structure → Modern Next.js structure
 - ✅ Dependencies → Updated to latest versions
 
@@ -179,10 +165,9 @@ This project is licensed under the MIT License.
 ## 🙏 Acknowledgments
 
 - Google Gemini AI for story generation
-- Lithuanian language support
 - Child-friendly content focus
 - Community feedback and testing
 
 ---
 
-Made with 💖 for children's joy | Sukurta su 💖 vaikų džiaugsmui
+Made with 💖 for children's joy

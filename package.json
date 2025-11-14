@@ -1,7 +1,7 @@
 {
   "name": "pasakainext",
   "version": "1.0.0",
-  "description": "Lithuanian Story Generator using Gemini AI - Next.js Version",
+  "description": "Multi-Language Story Generator using Gemini AI - Next.js Version",
   "private": true,
   "scripts": {
     "dev": "next dev",
