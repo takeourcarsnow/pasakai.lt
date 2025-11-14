@@ -4,6 +4,7 @@ export interface StoryRequest {
   characters: string;
   mood: string;
   ageGroup: string;
+  language: string;
 }
 
 export interface StoryResponse {

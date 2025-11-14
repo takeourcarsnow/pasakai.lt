@@ -7,10 +7,11 @@ import { AgeSlider } from '@/components/AgeSlider';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { TypewriterText } from '@/components/TypewriterText';
 import { ShareButtons } from '@/components/ShareButtons';
-import { STORY_OPTIONS } from '@/lib/constants';
+import { STORY_OPTIONS, LANGUAGES } from '@/lib/constants';
 import type { StoryRequest, StoryResponse } from '@/types';
 
 interface StorySelections {
+  language: string;
   time: string;
   place: string;
   characters: string;
@@ -20,6 +21,7 @@ interface StorySelections {
 
 export default function Home() {
   const [selections, setSelections] = useState<StorySelections>({
+    language: 'lt',
     time: '',
     place: '',
     characters: '',
@@ -38,11 +40,131 @@ export default function Home() {
 
   // Stable callbacks for each setting so child components don't receive a new
   // function reference every render (prevents repeated effect triggers).
+  const onLanguageSelection = useCallback((value: string) => updateSelection('language', value), [updateSelection]);
   const onTimeSelection = useCallback((value: string) => updateSelection('time', value), [updateSelection]);
   const onPlaceSelection = useCallback((value: string) => updateSelection('place', value), [updateSelection]);
   const onCharacterSelection = useCallback((value: string) => updateSelection('characters', value), [updateSelection]);
   const onMoodSelection = useCallback((value: string) => updateSelection('mood', value), [updateSelection]);
   const onAgeChange = useCallback((value: string) => updateSelection('ageGroup', value), [updateSelection]);
+
+  // Helper function to get UI text based on language
+  const getUIText = (key: string): string => {
+    const texts: Record<string, Record<string, string>> = {
+      title: {
+        lt: '✨ PasakAI ✨',
+        en: '✨ StoryAI ✨',
+        es: '✨ CuentoAI ✨',
+        fr: '✨ HistoireAI ✨',
+        de: '✨ GeschichteAI ✨',
+        it: '✨ StoriaAI ✨'
+      },
+      tagline: {
+        lt: 'Atrask savo stebuklingą pasaką 🪄',
+        en: 'Discover your magical story 🪄',
+        es: 'Descubre tu cuento mágico 🪄',
+        fr: 'Découvrez votre histoire magique 🪄',
+        de: 'Entdecken Sie Ihre magische Geschichte 🪄',
+        it: 'Scopri la tua storia magica 🪄'
+      },
+      description: {
+        lt: 'Pasirink veikėjus, vietą, laiką ir nuotaiką, o mes paversime tavo idėjas magiška istorija!',
+        en: 'Choose characters, place, time and mood, and we will turn your ideas into a magical story!',
+        es: '¡Elige personajes, lugar, tiempo y ambiente, y convertiremos tus ideas en una historia mágica!',
+        fr: 'Choisissez les personnages, le lieu, le temps et l\'ambiance, et nous transformerons vos idées en une histoire magique !',
+        de: 'Wählen Sie Charaktere, Ort, Zeit und Stimmung, und wir verwandeln Ihre Ideen in eine magische Geschichte!',
+        it: 'Scegli personaggi, luogo, tempo e atmosfera, e trasformeremo le tue idee in una storia magica!'
+      },
+      languageTitle: {
+        lt: '🌍 Kalba',
+        en: '🌍 Language',
+        es: '🌍 Idioma',
+        fr: '🌍 Langue',
+        de: '🌍 Sprache',
+        it: '🌍 Lingua'
+      },
+      timeTitle: {
+        lt: '🕰️ Kada vyksta pasaka?',
+        en: '🕰️ When does the story take place?',
+        es: '🕰️ ¿Cuándo ocurre el cuento?',
+        fr: '🕰️ Quand l\'histoire se déroule-t-elle ?',
+        de: '🕰️ Wann spielt die Geschichte?',
+        it: '🕰️ Quando si svolge la storia?'
+      },
+      placeTitle: {
+        lt: '📍 Kur vyksta pasaka?',
+        en: '📍 Where does the story take place?',
+        es: '📍 ¿Dónde ocurre el cuento?',
+        fr: '📍 Où se déroule l\'histoire ?',
+        de: '📍 Wo spielt die Geschichte?',
+        it: '📍 Dove si svolge la storia?'
+      },
+      characterTitle: {
+        lt: '👥 Kas yra veikėjai?',
+        en: '👥 Who are the characters?',
+        es: '👥 ¿Quiénes son los personajes?',
+        fr: '👥 Qui sont les personnages ?',
+        de: '👥 Wer sind die Charaktere?',
+        it: '👥 Chi sono i personaggi?'
+      },
+      moodTitle: {
+        lt: '🎭 Kokia nuotaika?',
+        en: '🎭 What is the mood?',
+        es: '🎭 ¿Cuál es el ambiente?',
+        fr: '🎭 Quelle est l\'ambiance ?',
+        de: '🎭 Wie ist die Stimmung?',
+        it: '🎭 Qual è l\'atmosfera?'
+      },
+      creating: {
+        lt: 'Kuriama... 🌟',
+        en: 'Creating... 🌟',
+        es: 'Creando... 🌟',
+        fr: 'Création... 🌟',
+        de: 'Erstellen... 🌟',
+        it: 'Creazione... 🌟'
+      },
+      createButton: {
+        lt: 'Sukurti pasaką ✨',
+        en: 'Create story ✨',
+        es: 'Crear cuento ✨',
+        fr: 'Créer l\'histoire ✨',
+        de: 'Geschichte erstellen ✨',
+        it: 'Crea storia ✨'
+      },
+      storyReady: {
+        lt: '✨ Tavo pasaka paruošta!',
+        en: '✨ Your story is ready!',
+        es: '✨ ¡Tu cuento está listo!',
+        fr: '✨ Votre histoire est prête !',
+        de: '✨ Ihre Geschichte ist fertig!',
+        it: '✨ La tua storia è pronta!'
+      },
+      createNew: {
+        lt: 'Kurti naują pasaką 🌟',
+        en: 'Create new story 🌟',
+        es: 'Crear nuevo cuento 🌟',
+        fr: 'Créer une nouvelle histoire 🌟',
+        de: 'Neue Geschichte erstellen 🌟',
+        it: 'Crea nuova storia 🌟'
+      },
+      footer: {
+        lt: 'Sukurta su 💖 vaikų džiaugsmui',
+        en: 'Created with 💖 for children\'s joy',
+        es: 'Creado con 💖 para la alegría de los niños',
+        fr: 'Créé avec 💖 pour la joie des enfants',
+        de: 'Mit 💖 für die Freude der Kinder erstellt',
+        it: 'Creato con 💖 per la gioia dei bambini'
+      },
+      author: {
+        lt: '🐈‍⬛ Autorius',
+        en: '🐈‍⬛ Author',
+        es: '🐈‍⬛ Autor',
+        fr: '🐈‍⬛ Auteur',
+        de: '🐈‍⬛ Autor',
+        it: '🐈‍⬛ Autore'
+      }
+    };
+    return texts[key]?.[selections.language] || texts[key]?.en || key;
+  };
 
   const generateStory = async () => {
     // Validate selections
@@ -50,14 +172,43 @@ export default function Home() {
     const missing = required.filter(key => !selections[key]);
     
     if (missing.length > 0) {
-      const missingLabels = missing.map(key => ({
-        time: 'laiką',
-        place: 'vietą',
-        characters: 'veikėjus',
-        mood: 'nuotaiką'
-      })[key]);
+      const missingLabels: Record<string, Record<string, string>> = {
+        time: {
+          lt: 'laiką',
+          en: 'time',
+          es: 'tiempo',
+          fr: 'temps',
+          de: 'Zeit',
+          it: 'tempo'
+        },
+        place: {
+          lt: 'vietą',
+          en: 'place',
+          es: 'lugar',
+          fr: 'lieu',
+          de: 'Ort',
+          it: 'luogo'
+        },
+        characters: {
+          lt: 'veikėjus',
+          en: 'characters',
+          es: 'personajes',
+          fr: 'personnages',
+          de: 'Charaktere',
+          it: 'personaggi'
+        },
+        mood: {
+          lt: 'nuotaiką',
+          en: 'mood',
+          es: 'ambiente',
+          fr: 'ambiance',
+          de: 'Stimmung',
+          it: 'atmosfera'
+        }
+      };
       
-      alert(`Prašome pasirinkti: ${missingLabels.join(', ')} 🎯`);
+      const labels = missing.map(key => missingLabels[key]?.[selections.language] || missingLabels[key]?.en || key);
+      alert(`Prašome pasirinkti: ${labels.join(', ')} 🎯`);
       return;
     }
 
@@ -92,7 +243,15 @@ export default function Home() {
 
     } catch (error) {
       console.error('Error:', error);
-      alert('Įvyko klaida! Bandykite dar kartą. 😔');
+      const errorMessages: Record<string, string> = {
+        lt: 'Įvyko klaida! Bandykite dar kartą. 😔',
+        en: 'An error occurred! Please try again. 😔',
+        es: '¡Ocurrió un error! Por favor, inténtalo de nuevo. 😔',
+        fr: 'Une erreur s\'est produite ! Veuillez réessayer. 😔',
+        de: 'Ein Fehler ist aufgetreten! Bitte versuchen Sie es erneut. 😔',
+        it: 'Si è verificato un errore! Per favore, riprova. 😔'
+      };
+      alert(errorMessages[selections.language] || errorMessages.en);
       setIsLoading(false);
     }
   };
@@ -117,8 +276,8 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>✨ PasakAI - Atrask savo stebuklingą pasaką 🪄</title>
-        <meta name="description" content="Atrask savo pasaką" />
+        <title>{getUIText('title')}</title>
+        <meta name="description" content={getUIText('description')} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         
         
@@ -127,8 +286,8 @@ export default function Home() {
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
         
-        <meta property="og:title" content="✨ PasakAI ✨" />
-        <meta property="og:description" content="Atrask savo pasaką" />
+        <meta property="og:title" content={getUIText('title')} />
+        <meta property="og:description" content={getUIText('description')} />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         
@@ -143,15 +302,15 @@ export default function Home() {
 
       <div className="social-links">
         <a href="https://www.nefas.tv/" target="_blank" rel="noopener noreferrer" className="patreon-link">
-          <span>🐈‍⬛ Autorius</span>
+          <span>{getUIText('author')}</span>
         </a>
       </div>
 
       <div className="hero">
-        <h1>✨ PasakAI ✨</h1>
-        <p className="tagline">Atrask savo stebuklingą pasaką 🪄</p>
+        <h1>{getUIText('title')}</h1>
+        <p className="tagline">{getUIText('tagline')}</p>
         <div className="hero-description">
-          <p>Pasirink veikėjus, vietą, laiką ir nuotaiką, o mes paversime tavo idėjas magiška istorija!</p>
+          <p>{getUIText('description')}</p>
           <div className="magic-icons" aria-hidden="true">
             <span>🦄</span>
             <span>🌟</span>
@@ -164,29 +323,36 @@ export default function Home() {
       <div className="container">
         <div className="story-settings">
           <SettingSwiper
-            title="🕰️ Kada vyksta pasaka?"
-            options={STORY_OPTIONS.time}
+            title={getUIText('languageTitle')}
+            options={LANGUAGES}
+            onSelectionChange={onLanguageSelection}
+            className="language-swiper"
+          />
+
+          <SettingSwiper
+            title={getUIText('timeTitle')}
+            options={STORY_OPTIONS[selections.language as keyof typeof STORY_OPTIONS].time}
             onSelectionChange={onTimeSelection}
             className="time-swiper"
           />
 
           <SettingSwiper
-            title="📍 Kur vyksta pasaka?"
-            options={STORY_OPTIONS.place}
+            title={getUIText('placeTitle')}
+            options={STORY_OPTIONS[selections.language as keyof typeof STORY_OPTIONS].place}
             onSelectionChange={onPlaceSelection}
             className="place-swiper"
           />
 
           <SettingSwiper
-            title="👥 Kas yra veikėjai?"
-            options={STORY_OPTIONS.character}
+            title={getUIText('characterTitle')}
+            options={STORY_OPTIONS[selections.language as keyof typeof STORY_OPTIONS].character}
             onSelectionChange={onCharacterSelection}
             className="character-swiper"
           />
 
           <SettingSwiper
-            title="🎭 Kokia nuotaika?"
-            options={STORY_OPTIONS.mood}
+            title={getUIText('moodTitle')}
+            options={STORY_OPTIONS[selections.language as keyof typeof STORY_OPTIONS].mood}
             onSelectionChange={onMoodSelection}
             className="mood-swiper"
           />
@@ -202,7 +368,7 @@ export default function Home() {
             disabled={isLoading}
           >
             <span className="button-text">
-              {isLoading ? 'Kuriama... 🌟' : 'Sukurti pasaką ✨'}
+              {isLoading ? getUIText('creating') : getUIText('createButton')}
             </span>
             <div className="button-magic" aria-hidden="true"></div>
           </button>
@@ -214,7 +380,7 @@ export default function Home() {
           {showStory && (
             <div className="story-content" style={{ display: 'block' }}>
               <div className="story-header">
-                <h3>✨ Tavo pasaka paruošta!</h3>
+                <h3>{getUIText('storyReady')}</h3>
               </div>
               
               <TypewriterText 
@@ -231,7 +397,7 @@ export default function Home() {
                 onClick={resetStory}
                 style={{ marginTop: '2rem' }}
               >
-                <span className="button-text">Kurti naują pasaką 🌟</span>
+                <span className="button-text">{getUIText('createNew')}</span>
               </button>
             </div>
           )}
@@ -241,10 +407,10 @@ export default function Home() {
       <footer>
         <div className="footer-social-links">
           <a href="https://www.nefas.tv/" target="_blank" rel="noopener noreferrer" className="patreon-link">
-            <span>🐈‍⬛ Autorius</span>
+            <span>{getUIText('author')}</span>
           </a>
         </div>
-        <p>Sukurta su 💖 vaikų džiaugsmui</p>
+        <p>{getUIText('footer')}</p>
       </footer>
     </>
   );
