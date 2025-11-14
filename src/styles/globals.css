@@ -222,6 +222,7 @@ body.light-theme {
     cursor: pointer;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     will-change: transform, box-shadow;
+    text-align: center;
 }
 
 .choice-card::after,
@@ -249,8 +250,15 @@ body.light-theme {
 }
 
 .emoji {
+    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Bree Serif', serif;
     font-size: 3rem;
     margin-bottom: 1rem;
+}
+
+.emoji img {
+    width: 40px;
+    height: auto;
+    border-radius: 4px;
 }
 
 .swiper-button-next,
@@ -372,7 +380,6 @@ footer {
     text-align: center;
     padding: 3rem 1rem;
     margin-top: 4rem;
-    background: rgba(0, 0, 0, 0.1);
 }
 
 .age-slider-container {

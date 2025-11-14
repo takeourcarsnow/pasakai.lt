@@ -1,30 +1,24 @@
 import React from 'react';
-import type { AgeRange } from '@/types';
 
 interface AgeSliderProps {
   value: string;
   onChange: (value: string) => void;
+  title: string;
+  ranges: Record<string, string>;
+  labels: string[];
 }
 
-const AGE_RANGES: Record<string, AgeRange> = {
-  '1': { text: '3-6 metų vaikams', emoji: '👶' },
-  '2': { text: '7-9 metų vaikams', emoji: '📖' },
-  '3': { text: '10-12 metų vaikams', emoji: '📚' },
-  '4': { text: '13+ metų vaikams', emoji: '🎯' }
-};
-
-export const AgeSlider: React.FC<AgeSliderProps> = ({ value, onChange }) => {
-  const currentRange = AGE_RANGES[value];
+export const AgeSlider: React.FC<AgeSliderProps> = ({ value, onChange, title, ranges, labels }) => {
+  const currentRange = ranges[value];
 
   return (
     <div className="setting-section">
-      <h2>👶 Skaitytojo amžius</h2>
+      <h2>{title}</h2>
       <div className="age-slider-container">
         <div className="age-labels">
-          <span>3-6 m.</span>
-          <span>7-9 m.</span>
-          <span>10-12 m.</span>
-          <span>13+ m.</span>
+          {labels.map((label, index) => (
+            <span key={index}>{label}</span>
+          ))}
         </div>
         <input
           type="range"
@@ -37,8 +31,10 @@ export const AgeSlider: React.FC<AgeSliderProps> = ({ value, onChange }) => {
           onChange={(e) => onChange(e.target.value)}
         />
         <div className="age-description" id="age-description">
-          <span className="age-emoji">{currentRange.emoji}</span>
-          <span className="age-text">{currentRange.text}</span>
+          <span className="age-emoji">
+            {value === '1' ? '👶' : value === '2' ? '📖' : value === '3' ? '📚' : '🎯'}
+          </span>
+          <span className="age-text">{currentRange}</span>
         </div>
       </div>
     </div>

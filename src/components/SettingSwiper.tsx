@@ -9,11 +9,14 @@ import type { Swiper as SwiperType } from 'swiper';
 interface ChoiceCardProps {
   emoji: string;
   text: string;
+  onClick?: () => void;
 }
 
-const ChoiceCard: React.FC<ChoiceCardProps> = ({ emoji, text }) => (
-  <div className="choice-card">
-    <div className="emoji">{emoji}</div>
+const ChoiceCard: React.FC<ChoiceCardProps> = ({ emoji, text, onClick }) => (
+  <div className="choice-card" onClick={onClick}>
+    <div className="emoji">
+      {emoji.startsWith('http') ? <img src={emoji} alt={text} /> : emoji}
+    </div>
     <span>{text}</span>
   </div>
 );
@@ -67,6 +70,19 @@ export const SettingSwiper: React.FC<SettingSwiperProps> = ({
     }
   };
 
+  const handleCardClick = (index: number) => {
+    if (!swiper) return;
+    const slidesPerView = typeof swiper.params.slidesPerView === 'number' ? swiper.params.slidesPerView : 1;
+    const half = Math.floor(slidesPerView / 2);
+    const leftmostIndex = swiper.activeIndex - half;
+    const rightmostIndex = swiper.activeIndex + half;
+    if (index === leftmostIndex && index !== rightmostIndex) {
+      swiper.slidePrev();
+    } else if (index === rightmostIndex && index !== leftmostIndex) {
+      swiper.slideNext();
+    }
+  };
+
   return (
     <div className="setting-section">
       <h2>{title}</h2>
@@ -95,7 +111,7 @@ export const SettingSwiper: React.FC<SettingSwiperProps> = ({
         >
           {options.map((option, index) => (
             <SwiperSlide key={index} data-value={option.value}>
-              <ChoiceCard emoji={option.emoji} text={option.text} />
+              <ChoiceCard emoji={option.emoji} text={option.text} onClick={() => handleCardClick(index)} />
             </SwiperSlide>
           ))}
         </Swiper>

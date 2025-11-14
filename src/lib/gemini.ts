@@ -67,7 +67,7 @@ export const COMPLEXITY_CONFIGS: Record<string, ComplexityConfig> = {
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 const model = genAI.getGenerativeModel({
-  model: 'gemini-2.5-flash',
+  model: 'gemini-2.5-flash-lite',
   safetySettings: SAFETY_SETTINGS
 });
 
@@ -90,21 +90,42 @@ export const cleanStoryText = (text: string): string => {
   );
 };
 
-// Generate story prompt based on user selections
-export const generatePrompt = ({ time, place, characters, mood, ageGroup, language }: StoryRequest): string => {
-  const complexity = COMPLEXITY_CONFIGS[ageGroup].style;
-  
-  if (language === 'en') {
-    return `
-      Create a children's story in English with these parameters:
-      Time: ${time}
-      Place: ${place}
-      Characters: ${characters}
-      Mood: ${mood}
+// Language-specific prompt templates
+const PROMPT_TEMPLATES = {
+  lt: {
+    intro: 'Sukurk vaikišką pasaką lietuvių kalba su šiais parametrais:',
+    time: 'Laikas',
+    place: 'Vieta',
+    characters: 'Veikėjai',
+    mood: 'Nuotaika',
+    complexity: 'Istorijos sudėtingumas ir stilius',
+    requirements: `
+      Pasaka turi būti:
+      - Suskirstyta į 4-5 aiškias pastraipas
+      - Pradėti su "Vieną kartą..." arba panašiai
+      - Turėti įdomią kulminaciją
+      - Turėti laimingą pabaigą
+      - Turėti aiškią moralinę žinutę
+      - Būti lengvai suprantama pasirinktai amžiaus grupei
       
-      Story complexity and style:
-      ${complexity.replace(/lietuvių/g, 'English').replace(/žodžių/g, 'words')}
+      SVARBU: 
+      - Nerašyti žodžių tarp žvaigždučių ir apskritai nenaudoti jų niekur (*)
+      - Privalo nebūti gramatinių ar stiliaus klaidų
+      - Nenaudoti jokių specialių simbolių ar formatavimo
+      - Būtinai pridėt atitinkamus emoji prie kiekvieno arba kas antro sakinio
+      - Kiekviena pastraipa turi prasidėti paprastu tekstu be jokių simbolių
       
+      Prašau formatuoti pastraipas su dvigubais naujų eilučių tarpais tarp jų.
+    `
+  },
+  en: {
+    intro: 'Create a children\'s story in English with these parameters:',
+    time: 'Time',
+    place: 'Place',
+    characters: 'Characters',
+    mood: 'Mood',
+    complexity: 'Story complexity and style',
+    requirements: `
       The story must be:
       - Divided into 4-5 clear paragraphs
       - Start with "Once upon a time..." or similar
@@ -121,20 +142,16 @@ export const generatePrompt = ({ time, place, characters, mood, ageGroup, langua
       - Each paragraph must start with plain text without any symbols
       
       Please format paragraphs with double newlines between them.
-    `.trim();
-  }
-  
-  if (language === 'es') {
-    return `
-      Crea un cuento infantil en español con estos parámetros:
-      Tiempo: ${time}
-      Lugar: ${place}
-      Personajes: ${characters}
-      Ambiente: ${mood}
-      
-      Complejidad y estilo de la historia:
-      ${complexity.replace(/lietuvių/g, 'español').replace(/žodžių/g, 'palabras')}
-      
+    `
+  },
+  es: {
+    intro: 'Crea un cuento infantil en español con estos parámetros:',
+    time: 'Tiempo',
+    place: 'Lugar',
+    characters: 'Personajes',
+    mood: 'Ambiente',
+    complexity: 'Complejidad y estilo de la historia',
+    requirements: `
       El cuento debe ser:
       - Dividido en 4-5 párrafos claros
       - Comenzar con "Érase una vez..." o similar
@@ -151,20 +168,16 @@ export const generatePrompt = ({ time, place, characters, mood, ageGroup, langua
       - Cada párrafo debe comenzar con texto plano sin símbolos
       
       Por favor formatea los párrafos con doble salto de línea entre ellos.
-    `.trim();
-  }
-  
-  if (language === 'fr') {
-    return `
-      Créez une histoire pour enfants en français avec ces paramètres:
-      Temps: ${time}
-      Lieu: ${place}
-      Personnages: ${characters}
-      Ambiance: ${mood}
-      
-      Complexité et style de l'histoire:
-      ${complexity.replace(/lietuvių/g, 'français').replace(/žodžių/g, 'mots')}
-      
+    `
+  },
+  fr: {
+    intro: 'Créez une histoire pour enfants en français avec ces paramètres:',
+    time: 'Temps',
+    place: 'Lieu',
+    characters: 'Personnages',
+    mood: 'Ambiance',
+    complexity: 'Complexité et style de l\'histoire',
+    requirements: `
       L'histoire doit être:
       - Divisée en 4-5 paragraphes clairs
       - Commencer par "Il était une fois..." ou similaire
@@ -181,20 +194,16 @@ export const generatePrompt = ({ time, place, characters, mood, ageGroup, langua
       - Chaque paragraphe doit commencer par du texte brut sans symboles
       
       Veuillez formater les paragraphes avec un double saut de ligne entre eux.
-    `.trim();
-  }
-  
-  if (language === 'de') {
-    return `
-      Erstelle eine Kindergeschichte auf Deutsch mit diesen Parametern:
-      Zeit: ${time}
-      Ort: ${place}
-      Charaktere: ${characters}
-      Stimmung: ${mood}
-      
-      Komplexität und Stil der Geschichte:
-      ${complexity.replace(/lietuvių/g, 'Deutsch').replace(/žodžių/g, 'Wörter')}
-      
+    `
+  },
+  de: {
+    intro: 'Erstelle eine Kindergeschichte auf Deutsch mit diesen Parametern:',
+    time: 'Zeit',
+    place: 'Ort',
+    characters: 'Charaktere',
+    mood: 'Stimmung',
+    complexity: 'Komplexität und Stil der Geschichte',
+    requirements: `
       Die Geschichte muss sein:
       - In 4-5 klare Absätze unterteilt
       - Beginnen mit "Es war einmal..." oder ähnlich
@@ -211,20 +220,16 @@ export const generatePrompt = ({ time, place, characters, mood, ageGroup, langua
       - Jeder Absatz muss mit reinem Text ohne Symbole beginnen
       
       Bitte formatiere Absätze mit doppeltem Zeilenumbruch dazwischen.
-    `.trim();
-  }
-  
-  if (language === 'it') {
-    return `
-      Crea una storia per bambini in italiano con questi parametri:
-      Tempo: ${time}
-      Luogo: ${place}
-      Personaggi: ${characters}
-      Atmosfera: ${mood}
-      
-      Complessità e stile della storia:
-      ${complexity.replace(/lietuvių/g, 'italiano').replace(/žodžių/g, 'parole')}
-      
+    `
+  },
+  it: {
+    intro: 'Crea una storia per bambini in italiano con questi parametri:',
+    time: 'Tempo',
+    place: 'Luogo',
+    characters: 'Personaggi',
+    mood: 'Atmosfera',
+    complexity: 'Complessità e stile della storia',
+    requirements: `
       La storia deve essere:
       - Divisa in 4-5 paragrafi chiari
       - Iniziare con "C'era una volta..." o simile
@@ -241,41 +246,51 @@ export const generatePrompt = ({ time, place, characters, mood, ageGroup, langua
       - Ogni paragrafo deve iniziare con testo semplice senza simboli
       
       Per favore formatta i paragrafi con doppio a capo tra di loro.
-    `.trim();
+    `
   }
+};
+
+// Generate story prompt based on user selections
+export const generatePrompt = ({ time, place, characters, mood, ageGroup, language }: StoryRequest): string => {
+  const complexity = COMPLEXITY_CONFIGS[ageGroup].style;
+  const template = PROMPT_TEMPLATES[language as keyof typeof PROMPT_TEMPLATES] || PROMPT_TEMPLATES.lt;
   
   return `
-    Sukurk vaikišką pasaką lietuvių kalba su šiais parametrais:
-    Laikas: ${time}
-    Vieta: ${place}
-    Veikėjai: ${characters}
-    Nuotaika: ${mood}
+    ${template.intro}
+    ${template.time}: ${time}
+    ${template.place}: ${place}
+    ${template.characters}: ${characters}
+    ${template.mood}: ${mood}
     
-    Istorijos sudėtingumas ir stilius:
+    ${template.complexity}:
     ${complexity}
     
-    Pasaka turi būti:
-    - Suskirstyta į 4-5 aiškias pastraipas
-    - Pradėti su "Vieną kartą..." arba panašiai
-    - Turėti įdomią kulminaciją
-    - Turėti laimingą pabaigą
-    - Turėti aiškią moralinę žinutę
-    - Būti lengvai suprantama pasirinktai amžiaus grupei
-    
-    SVARBU: 
-    - Nerašyti žodžių tarp žvaigždučių ir apskritai nenaudoti jų niekur (*)
-    - Privalo nebūti gramatinių ar stiliaus klaidų
-    - Nenaudoti jokių specialių simbolių ar formatavimo
-    - Būtinai pridėt atitinkamus emoji prie kiekvieno arba kas antro sakinio
-    - Kiekviena pastraipa turi prasidėti paprastu tekstu be jokių simbolių
-    
-    Prašau formatuoti pastraipas su dvigubais naujų eilučių tarpais tarp jų.
+    ${template.requirements}
   `.trim();
 };
 
 // Generate story using Gemini AI
 export const generateStory = async (request: StoryRequest): Promise<string> => {
   const prompt = generatePrompt(request);
-  const result = await model.generateContent(prompt);
-  return cleanStoryText(result.response.text());
+  
+  const maxRetries = 3;
+  let lastError: Error | null = null;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const result = await model.generateContent(prompt);
+      return cleanStoryText(result.response.text());
+    } catch (error) {
+      lastError = error as Error;
+      console.error(`Story generation attempt ${attempt} failed:`, error);
+      
+      if (attempt < maxRetries) {
+        // Wait before retrying (exponential backoff)
+        const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+  
+  throw lastError || new Error('Failed to generate story after multiple attempts');
 };
