@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: [],
+    domains: ["flagcdn.com"],
   },
   experimental: {
     // Enable if needed
